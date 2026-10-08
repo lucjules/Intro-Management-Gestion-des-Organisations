@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM — Management & Gestion des Organisations (R1.08)</title>
+<style>
+  :root{
+    --bg:#0b0f16;
+    --card:#111823;
+    --card2:#141b26;
+    --border:#243044;
+    --text:#e6edf3;
+    --muted:#8b98a9;
+    --accent:#4f8cff;
+    --accent2:#7c5cff;
+    --green:#2ea043;
+    --red:#e5534b;
+    --amber:#d29922;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(1100px 600px at 8% -12%, #16294a 0%, transparent 58%),
+      radial-gradient(900px 520px at 100% -5%, #251a4a 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:26px 16px 70px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+
+  /* ---------- HEADER ---------- */
+  .topbar{
+    display:flex;align-items:center;gap:16px;
+    padding:16px 20px;margin-bottom:22px;
+    background:linear-gradient(135deg,rgba(79,140,255,.10),rgba(124,92,255,.08));
+    border:1px solid var(--border);border-radius:18px;
+    backdrop-filter:blur(6px);
+  }
+  .logo{
+    width:52px;height:52px;flex:0 0 52px;border-radius:14px;
+    display:grid;place-items:center;font-weight:800;font-size:1.05rem;letter-spacing:.5px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;box-shadow:0 8px 22px -8px rgba(79,140,255,.9);
+  }
+  .topbar h1{font-size:1.06rem;font-weight:700;letter-spacing:-.2px}
+  .topbar p{font-size:.82rem;color:var(--muted)}
+
+  /* ---------- SCREENS ---------- */
+  .screen{display:none;animation:fade .35s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)) , var(--card);
+    border:1px solid var(--border);border-radius:20px;
+    padding:28px;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.9);
+  }
+
+  /* ---------- START ---------- */
+  .hero{text-align:center;padding:38px 28px}
+  .hero .pill{
+    display:inline-block;font-size:.74rem;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--accent);border:1px solid rgba(79,140,255,.35);
+    background:rgba(79,140,255,.08);padding:6px 14px;border-radius:999px;margin-bottom:18px;font-weight:600;
+  }
+  .hero h2{font-size:1.85rem;line-height:1.25;margin-bottom:12px;letter-spacing:-.6px}
+  .hero h2 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .lead{color:var(--muted);max-width:560px;margin:0 auto 26px;font-size:.95rem}
+
+  .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+  .mode-btn{
+    background:var(--card2);border:1px solid var(--border);border-radius:14px;
+    padding:18px 14px;cursor:pointer;color:var(--text);font-family:inherit;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    transition:.2s;font-size:1rem;font-weight:700;
+  }
+  .mode-btn span{font-size:.72rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+  .mode-btn:hover{border-color:var(--accent);background:#17202e;transform:translateY(-3px);box-shadow:0 14px 30px -18px var(--accent)}
+  .mode-btn:active{transform:translateY(0)}
+
+  .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;text-align:left;margin-top:6px}
+  .info-grid div{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  .info-grid b{display:block;font-size:.78rem;color:var(--accent);letter-spacing:.4px;margin-bottom:2px}
+  .info-grid p{font-size:.82rem;color:var(--muted)}
+
+  /* ---------- QUIZ ---------- */
+  .quiz-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .badge{
+    display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
+    color:#c9b6ff;background:rgba(124,92,255,.14);border:1px solid rgba(124,92,255,.3);
+    padding:5px 12px;border-radius:999px;
+  }
+  .counter{font-size:.84rem;color:var(--muted);margin-left:10px}
+  .counter b{color:var(--text)}
+  .live{display:flex;align-items:center;gap:14px;font-size:.85rem;color:var(--muted)}
+  .live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .live b{color:var(--text);font-size:1rem}
+
+  .progress{height:7px;background:#1b2432;border-radius:999px;overflow:hidden;margin-bottom:26px}
+  .progress .bar{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s ease}
+
+  .qtext{font-size:1.22rem;line-height:1.45;font-weight:650;letter-spacing:-.2px;margin-bottom:22px}
+
+  .options{display:flex;flex-direction:column;gap:11px}
+  .option{
+    display:flex;align-items:flex-start;gap:14px;width:100%;text-align:left;
+    background:var(--card2);border:1px solid var(--border);border-radius:14px;
+    padding:15px 17px;cursor:pointer;color:var(--text);font-family:inherit;
+    font-size:.96rem;transition:.16s;position:relative;
+  }
+  .option .letter{
+    flex:0 0 28px;height:28px;border-radius:9px;display:grid;place-items:center;
+    background:#1d2736;border:1px solid var(--border);
+    font-size:.78rem;font-weight:800;color:var(--muted);transition:.16s;
+  }
+  .option .otext{flex:1;padding-top:2px}
+  .option:hover:not(.disabled){border-color:var(--accent);background:#17202e;transform:translateX(4px)}
+  .option:hover:not(.disabled) .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .option.selected{border-color:var(--accent);background:rgba(79,140,255,.13);box-shadow:0 0 0 1px rgba(79,140,255,.35) inset}
+  .option.selected .letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .option.disabled{cursor:default}
+  .option.correct{border-color:var(--green);background:rgba(46,160,67,.14)}
+  .option.correct .letter{background:var(--green);color:#fff;border-color:var(--green)}
+  .option.wrong{border-color:var(--red);background:rgba(229,83,75,.14)}
+  .option.wrong .letter{background:var(--red);color:#fff;border-color:var(--red)}
+  .option.correct::after,.option.wrong::after{
+    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    font-size:1rem;font-weight:800;
+  }
+  .option.correct::after{content:"✓";color:var(--green)}
+  .option.wrong::after{content:"✕";color:var(--red)}
+
+  .feedback{
+    margin-top:20px;border-radius:14px;padding:0 18px;max-height:0;overflow:hidden;
+    opacity:0;transition:.3s;border:1px solid transparent;font-size:.9rem;
+  }
+  .feedback.show{max-height:400px;opacity:1;padding:15px 18px}
+  .feedback.ok{background:rgba(46,160,67,.09);border-color:rgba(46,160,67,.35)}
+  .feedback.ko{background:rgba(229,83,75,.09);border-color:rgba(229,83,75,.35)}
+  .feedback .fb-title{font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .feedback.ok .fb-title{color:#5ddc7c}
+  .feedback.ko .fb-title{color:#ff8a80}
+  .feedback p{color:#c3ccd8}
+
+  .actions{display:flex;gap:12px;margin-top:24px;justify-content:flex-end}
+  .actions.center{justify-content:center;flex-wrap:wrap}
+  .btn{
+    font-family:inherit;font-size:.94rem;font-weight:700;border-radius:12px;
+    padding:13px 26px;cursor:pointer;border:1px solid transparent;transition:.2s;
+  }
+  .btn.primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+    box-shadow:0 12px 28px -14px rgba(79,140,255,.95);
+  }
+  .btn.primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 34px -14px rgba(79,140,255,1)}
+  .btn.primary:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;transform:none}
+  .btn.ghost{background:transparent;border-color:var(--border);color:var(--muted)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--text)}
+  .hidden{display:none !important}
+
+  /* ---------- RESULT ---------- */
+  .result-top{display:flex;gap:30px;align-items:center;flex-wrap:wrap;justify-content:center;text-align:center}
+  .donut{
+    width:170px;height:170px;flex:0 0 170px;border-radius:50%;
+    display:grid;place-items:center;position:relative;
+    background:conic-gradient(var(--accent) 0deg,#22303f 0deg);
+    transition:background .8s ease;
+  }
+  .donut::before{
+    content:"";position:absolute;inset:13px;border-radius:50%;background:var(--card);
+  }
+  .donut span{position:relative;font-size:2.1rem;font-weight:800;letter-spacing:-1px}
+  .result-info{flex:1;min-width:230px;text-align:left}
+  .result-info h2{font-size:1.6rem;margin-bottom:6px;letter-spacing:-.5px}
+  .result-info > p{color:var(--muted);margin-bottom:18px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap}
+  .stats div{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:10px 16px;flex:1;min-width:96px;text-align:center}
+  .stats b{display:block;font-size:1.25rem}
+  .stats span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+
+  .section-title{
+    font-size:.78rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);
+    margin:34px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--border);font-weight:700;
+  }
+
+  .themes{display:flex;flex-direction:column;gap:9px}
+  .theme-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;font-size:.86rem}
+  .theme-row .tname{color:#c3ccd8}
+  .theme-row .tval{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.82rem}
+  .tbar{grid-column:1/-1;height:6px;background:#1b2432;border-radius:99px;overflow:hidden;margin-top:-4px}
+  .tbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+  .review{display:flex;flex-direction:column;gap:12px}
+  .rev-item{
+    border:1px solid var(--border);border-left:4px solid var(--green);
+    background:rgba(255,255,255,.02);border-radius:12px;padding:15px 18px;
+  }
+  .rev-item.ko{border-left-color:var(--red)}
+  .rev-q{font-weight:650;font-size:.93rem;margin-bottom:10px;display:flex;gap:10px}
+  .rev-q .num{color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .rev-line{font-size:.85rem;margin-bottom:4px;color:#c3ccd8}
+  .rev-line b{color:var(--muted);font-weight:600}
+  .rev-line.good{color:#5ddc7c}
+  .rev-line.bad{color:#ff8a80}
+  .rev-exp{font-size:.83rem;color:var(--muted);margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);font-style:italic}
+
+  @media (max-width:640px){
+    body{padding:14px 10px 50px}
+    .card{padding:20px 16px;border-radius:16px}
+    .hero h2{font-size:1.45rem}
+    .qtext{font-size:1.08rem}
+    .topbar{padding:12px 14px}
+    .topbar h1{font-size:.92rem}
+    .logo{width:44px;height:44px;flex-basis:44px;font-size:.9rem}
+    .donut{width:140px;height:140px;flex-basis:140px}
+    .donut span{font-size:1.7rem}
+    .result-info{text-align:center}
+    .actions{justify-content:stretch}
+    .btn{flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="logo">R1.08</div>
+    <div>
+      <h1>QCM — Management &amp; Gestion des Organisations</h1>
+      <p>Introduction à la gestion des organisations · Révision interactive</p>
+    </div>
+  </header>
+
+  <!-- ==================== ÉCRAN ACCUEIL ==================== -->
+  <section id="screen-start" class="screen active">
+    <div class="card hero">
+      <div class="pill">Évaluation interactive</div>
+      <h2>Testez vos connaissances sur <span>la gestion des organisations</span></h2>
+      <p class="lead">
+        Entreprise, valeur ajoutée, fonctions de Fayol, niveaux de gestion, stratégie, Sun Tzu,
+        Clausewitz, modèle LCAG et PESTEL… Choisissez votre format et lancez-vous.
+      </p>
+
+      <div class="modes">
+        <button class="mode-btn" data-count="10">10 questions<span>Express</span></button>
+        <button class="mode-btn" data-count="20">20 questions<span>Standard</span></button>
+        <button class="mode-btn" data-count="30">30 questions<span>Approfondi</span></button>
+        <button class="mode-btn" data-count="0">Toutes<span id="totalLabel">44 questions</span></button>
+      </div>
+
+      <div class="info-grid">
+        <div><b>Correction immédiate</b><p>Réponse validée + explication détaillée à chaque question.</p></div>
+        <div><b>Ordre aléatoire</b><p>Questions et propositions mélangées à chaque partie.</p></div>
+        <div><b>Bilan par thème</b><p>Identifiez vos points faibles pour cibler les révisions.</p></div>
+        <div><b>Astuce clavier</b><p>Touches 1–4 pour répondre, Entrée pour valider / continuer.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ÉCRAN QUIZ ==================== -->
+  <section id="screen-quiz" class="screen">
+    <div class="card">
+      <div class="quiz-head">
+        <div>
+          <span class="badge" id="themeBadge">Thème</span>
+          <span class="counter">Question <b id="qNum">1</b> / <span id="qTotal">10</span></span>
+        </div>
+        <div class="live">
+          <span><span class="dot"></span><b id="liveScore">0</b> pt</span>
+          <span>⏱ <b id="liveTime">0:00</b></span>
+        </div>
+      </div>
+
+      <div class="progress"><div class="bar" id="bar"></div></div>
+
+      <h2 class="qtext" id="questionText"></h2>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="actions">
+        <button id="btnValidate" class="btn primary" disabled>Valider</button>
+        <button id="btnNext" class="btn primary hidden">Question suivante</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ÉCRAN RÉSULTAT ==================== -->
+  <section id="screen-result" class="screen">
+    <div class="card">
+      <div class="result-top">
+        <div class="donut" id="donut"><span id="donutPct">0%</span></div>
+        <div class="result-info">
+          <h2 id="resultTitle">Résultat</h2>
+          <p id="resultMsg"></p>
+          <div class="stats">
+            <div><b id="statCorrect">0</b><span>Correctes</span></div>
+            <div><b id="statWrong">0</b><span>Erreurs</span></div>
+            <div><b id="statTime">0:00</b><span>Temps</span></div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-title">Détail par thème</h3>
+      <div class="themes" id="themes"></div>
+
+      <h3 class="section-title">Correction détaillée</h3>
+      <div class="review" id="review"></div>
+
+      <div class="actions center">
+        <button id="btnRestart" class="btn primary">Refaire une partie</button>
+        <button id="btnHome" class="btn ghost">Retour à l'accueil</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   BASE DE QUESTIONS — issues du cours R1.08
+   ========================================================= */
+const QUESTIONS = [
+  /* ---------- L'ENTREPRISE ---------- */
+  { theme:"L'entreprise",
+    q:"Que signifie l'acronyme ESN ?",
+    options:["Entreprise de Services Numériques","Établissement Supérieur National","Entreprise Sociale et Numérique","École des Sciences du Numérique"],
+    answer:0,
+    explain:"ESN = Entreprise de Services Numériques." },
+
+  { theme:"L'entreprise",
+    q:"Que signifie ETPA ?",
+    options:["Employé à Temps Plein Annuel","Effectif Total de Production Annuelle","Emploi à Temps Partiel Annualisé","Équivalent Temps Plein d'Activité"],
+    answer:0,
+    explain:"ETPA = Employé à Temps Plein Annuel (base 35 h/semaine, vacances incluses). C'est l'unité de mesure de l'effectif d'une entreprise." },
+
+  { theme:"L'entreprise",
+    q:"Quel est l'effectif d'une microentreprise ?",
+    options:["Moins de 10 ETPA","Moins de 50 ETPA","De 10 à 250 ETPA","Moins de 5 ETPA"],
+    answer:0,
+    explain:"Microentreprise : moins de 10 ETPA — environ 4,2 millions en France." },
+
+  { theme:"L'entreprise",
+    q:"Une Grande Entreprise (GE) se caractérise par un effectif de :",
+    options:["5 000 ETPA et plus","Plus de 250 ETPA","Plus de 1 000 ETPA","Plus de 10 000 ETPA"],
+    answer:0,
+    explain:"GE : ≥ 5 000 ETPA (environ 251 entreprises en France). Entre 10 et 250 ETPA c'est une petite entreprise." },
+
+  { theme:"L'entreprise",
+    q:"Comment calcule-t-on la capitalisation boursière ?",
+    options:["Nombre d'actions × Prix de l'action","Chiffre d'affaires × Marge","Actif total − Dettes","Prix de l'action ÷ Nombre d'actions"],
+    answer:0,
+    explain:"Capitalisation = Nombre d'actions × Prix de l'action. Le CAC 40 classe les 40 plus grandes entreprises françaises selon leur actif ou leur capitalisation." },
+
+  { theme:"L'entreprise",
+    q:"Selon le cours, l'entreprise est avant tout :",
+    options:["Une unité de production de Valeur Ajoutée et de répartition de la richesse créée","Une unité de production uniquement","Une organisation à but non lucratif","Un simple lieu de travail"],
+    answer:0,
+    explain:"L'entreprise a un double aspect : unité de production de Valeur Ajoutée (aspect économique) ET unité de répartition de la richesse créée (aspect social)." },
+
+  { theme:"L'entreprise",
+    q:"Dans une production marchande, si le résultat B est négatif (B < 0), on parle de :",
+    options:["Perte","Bénéfice","Marge unitaire","Valeur ajoutée"],
+    answer:0,
+    explain:"B = CA − CR. Si B > 0 : bénéfice ; si B < 0 : perte. La marge unitaire, elle, se calcule par Prix − Coût de revient." },
+
+  { theme:"L'entreprise",
+    q:"Qu'est-ce qu'une production non marchande ?",
+    options:["Une production proposée à un prix inférieur au coût de revient, ou gratuitement","Une production vendue au prix du marché","Une production exportée","Une production réalisée sans salariés"],
+    answer:0,
+    explain:"Organisations à but non lucratif, associations, État… Exemple : en France, la cantine ou la scolarité coûtent 5 à 10 fois plus cher que le prix payé par l'usager." },
+
+  /* ---------- VALEUR AJOUTÉE ---------- */
+  { theme:"Valeur Ajoutée",
+    q:"Quelle est la formule de la Valeur Ajoutée (VA) ?",
+    options:["VA = Chiffre d'affaires − Consommations intermédiaires","VA = Chiffre d'affaires − Salaires","VA = Bénéfice − Coût de revient","VA = Prix × Quantité"],
+    answer:0,
+    explain:"VA = Valeur de la production (CA) − Valeur des consommations intermédiaires (CI)." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Que sont les consommations intermédiaires (CI) ?",
+    options:["Les biens et services détruits ou transformés au cours du processus de production","Les salaires versés aux employés","Les investissements en machines","Les impôts payés par l'entreprise"],
+    answer:0,
+    explain:"Les CI regroupent l'ensemble des biens et services détruits ou transformés lors du processus de production (matières premières, électricité…)." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Un bien d'une valeur finale de 102 € est fabriqué à partir de 10 € de matières premières et 2 € d'électricité. Quelle est la VA créée ?",
+    options:["90 €","102 €","12 €","92 €"],
+    answer:0,
+    explain:"VA = 102 − (10 + 2) = 90 €. Le travail et le savoir-faire ajoutent une valeur nette de 90 €." },
+
+  { theme:"Valeur Ajoutée",
+    q:"La somme de toutes les valeurs ajoutées créées par les entreprises en France correspond :",
+    options:["Au PIB (Produit Intérieur Brut)","Au chiffre d'affaires total","À la dette publique","Au budget de l'État"],
+    answer:0,
+    explain:"L'addition de toutes les VA créées par les entreprises d'un pays donne le PIB." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Quelle part de la Valeur Ajoutée est consacrée aux salaires ?",
+    options:["Environ 60 %","Environ 20 %","Environ 35 %","Environ 80 %"],
+    answer:0,
+    explain:"≈ 60 % pour les salaires, 20 à 25 % pour les apporteurs de capitaux, et 20 à 30 % conservés par l'entreprise pour son développement." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Qu'est-ce qu'un dividende ?",
+    options:["La rémunération versée à l'actionnaire en contrepartie du risque financier pris","Le prix d'achat d'une action","Un impôt sur les sociétés","Une cotisation sociale"],
+    answer:0,
+    explain:"L'action est l'achat d'une part de propriété de l'entreprise ; le dividende est la rémunération versée à l'actionnaire en contrepartie du risque pris." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Quand la Sécurité sociale a-t-elle été créée en France ?",
+    options:["Le 4 octobre 1945","Le 1er janvier 1936","Le 4 octobre 1958","En 1880"],
+    answer:0,
+    explain:"La Sécurité sociale française a été créée le 4 octobre 1945. Elle couvre les risques de la vie : retraite, maladie, accidents du travail, maternité, chômage, famille…" },
+
+  { theme:"Valeur Ajoutée",
+    q:"À quel pays associe-t-on le système de protection sociale créé par Bismarck (1880-1890) ?",
+    options:["L'Allemagne","L'Angleterre","La France","Les États-Unis"],
+    answer:0,
+    explain:"Bismarck a créé en Allemagne (fin XIXᵉ siècle) un système destiné aux travailleurs sous un certain plafond de ressources." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Le rapport Beveridge (1920) instaure en Angleterre :",
+    options:["Un système universel financé par l'impôt","Un système réservé aux fonctionnaires","Un système financé uniquement par les employeurs","Une assurance privée obligatoire"],
+    answer:0,
+    explain:"Le rapport Beveridge (Angleterre, 1920) met en place un système universel financé par l'impôt. La France, elle, a un système mixte (cotisations sociales)." },
+
+  { theme:"Valeur Ajoutée",
+    q:"Quelle est la recette fiscale la plus importante de l'État français ?",
+    options:["La TVA","L'impôt sur le revenu","L'impôt sur les sociétés","La taxe foncière"],
+    answer:0,
+    explain:"La TVA est la recette fiscale la plus importante. Elle finance ce que les cotisations sociales ne couvrent pas." },
+
+  /* ---------- FONCTIONS ---------- */
+  { theme:"Fonctions de l'entreprise",
+    q:"Qui a, le premier, modélisé en 1916 le découpage de l'entreprise en grandes fonctions ?",
+    options:["Henri Fayol","Sun Tzu","Carl Von Clausewitz","Peter Drucker"],
+    answer:0,
+    explain:"Henri Fayol (1916) est le premier à modéliser l'entreprise comme un ensemble de fonctions. On lui doit aussi « Gérer, c'est prévoir. »" },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Parmi ces fonctions, laquelle est une fonction opérationnelle (principale) ?",
+    options:["Approvisionnement","Comptabilité","Ressources Humaines","Recherche & Développement"],
+    answer:0,
+    explain:"Fonctions opérationnelles : Approvisionnement, Production, Commerciale. RH, Finance, Comptabilité et R&D sont des fonctions de soutien." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Quelles sont les trois fonctions opérationnelles de l'entreprise ?",
+    options:["Approvisionnement, Production, Commerciale","RH, Finance, Comptabilité","Production, R&D, Finance","Commerciale, RH, Comptabilité"],
+    answer:0,
+    explain:"Les fonctions principales (opérationnelles) sont l'Approvisionnement, la Production et la fonction Commerciale." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Le « juste-à-temps » (flux tendus) consiste à :",
+    options:["Réduire les stocks sans risquer la rupture grâce à une organisation rigoureuse","Augmenter les stocks pour se protéger","Produire uniquement sur commande lointaine","Externaliser toute la production"],
+    answer:0,
+    explain:"Le juste-à-temps vise la réduction des stocks sans risquer la rupture, grâce à une organisation rigoureuse. C'est une méthode de la fonction Approvisionnement." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Quel est le « triptyque » à respecter dans la fonction Approvisionnement ?",
+    options:["Qualité, Coût, Délais","Prix, Stock, Transport","Offre, Demande, Marge","Sécurité, Vitesse, Volume"],
+    answer:0,
+    explain:"La fonction Approvisionnement doit garantir le respect du triptyque Qualité / Coût / Délais, en sélectionnant les fournisseurs et en négociant les achats." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Selon la règle d'or commerciale, fidéliser un client coûte environ :",
+    options:["5 fois moins cher que d'en acquérir un nouveau","2 fois plus cher","Autant que d'en acquérir un nouveau","10 fois plus cher"],
+    answer:0,
+    explain:"Fidéliser un client coûte environ 5 fois moins cher que d'en conquérir un nouveau : d'où l'importance du service après-vente et de la fidélisation." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Quelle est la finalité majeure de la fonction Finance ?",
+    options:["Assurer et maintenir l'équilibre financier à long terme (rentabilité et solvabilité)","Enregistrer les flux monétaires","Payer les salaires","Vendre la production"],
+    answer:0,
+    explain:"La Finance assure l'équilibre financier à long terme : trouver des sources de financement (banques, investisseurs) et rentabiliser les investissements." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Quelle fonction produit le Bilan et le Compte de résultat ?",
+    options:["La Comptabilité","La Finance","Le Contrôle de gestion","Les Ressources Humaines"],
+    answer:0,
+    explain:"La Comptabilité enregistre rigoureusement tous les flux monétaires et restitue l'information financière (Bilan et Compte de résultat)." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Quelle est la finalité majeure de la fonction Ressources Humaines ?",
+    options:["Gérer le capital humain dans une logique d'enrichissement mutuel entreprise/collaborateurs","Réduire au maximum la masse salariale","Recruter uniquement des cadres","Gérer les stocks de matériel"],
+    answer:0,
+    explain:"La RH gère le capital humain dans une logique d'enrichissement mutuel : recrutement, paie, formation continue, sécurité au travail et climat social." },
+
+  { theme:"Fonctions de l'entreprise",
+    q:"Quelle fonction est dédiée à l'innovation et au développement de nouveaux produits ou procédés ?",
+    options:["La Recherche & Développement (R&D)","La Production","La Comptabilité","L'Approvisionnement"],
+    answer:0,
+    explain:"La R&D (Recherche & Développement) est une fonction de soutien dédiée à l'innovation et au développement de nouveaux produits/procédés." },
+
+  /* ---------- GESTION ---------- */
+  { theme:"Gestion & Management",
+    q:"Quelle est la durée de vie moyenne d'une entreprise en France ?",
+    options:["5 ans","10 ans","15 ans","3 ans"],
+    answer:0,
+    explain:"La durée de vie moyenne d'une entreprise en France est de 5 ans — ce qui souligne l'importance d'une bonne gestion." },
+
+  { theme:"Gestion & Management",
+    q:"Quels sont les trois niveaux de gestion ?",
+    options:["Stratégique, tactique, opérationnel","Court, moyen, long terme","Financier, commercial, technique","Prévision, contrôle, sanction"],
+    answer:0,
+    explain:"Gestion stratégique (vision et long terme), gestion tactique (moyens à mettre en œuvre), gestion opérationnelle / contrôle (quotidien)." },
+
+  { theme:"Gestion & Management",
+    q:"Fixer la vision et les objectifs à long terme relève de la gestion :",
+    options:["Stratégique","Tactique","Opérationnelle","Comptable"],
+    answer:0,
+    explain:"La gestion stratégique fixe la vision, les objectifs à long terme et les grandes orientations (politique générale)." },
+
+  { theme:"Gestion & Management",
+    q:"Mettre en œuvre les instruments de contrôle et de surveillance au quotidien relève de la gestion :",
+    options:["Opérationnelle","Stratégique","Tactique","Financière"],
+    answer:0,
+    explain:"La gestion opérationnelle (contrôle) met en œuvre les instruments de contrôle et de surveillance au quotidien." },
+
+  { theme:"Gestion & Management",
+    q:"À qui doit-on la citation « Gérer, c'est prévoir » (1916) ?",
+    options:["Henri Fayol","Sun Tzu","Clausewitz","Alfred Chandler"],
+    answer:0,
+    explain:"« Gérer, c'est prévoir. » — Henri Fayol, 1916. Gérer consiste à prévoir, organiser, anticiper, contrôler, maîtriser et commander." },
+
+  /* ---------- STRATÉGIE ---------- */
+  { theme:"Stratégie",
+    q:"Que signifient « stratos » et « agein » ?",
+    options:["Armée / Conduire, guider","Guerre / Gagner","Plan / Exécuter","Force / Résister"],
+    answer:0,
+    explain:"Étymologie du mot stratégie : Stratos = armée ; Agein = conduire / guider." },
+
+  { theme:"Stratégie",
+    q:"Qui a écrit « L'Art de la guerre » vers 500 av. J.-C. ?",
+    options:["Sun Tzu","Clausewitz","Machiavel","Fayol"],
+    answer:0,
+    explain:"Sun Tzu, « L'Art de la guerre » (13 chapitres, rédigé en Chine vers 500 av. J.-C., traduit en France en 1772)." },
+
+  { theme:"Stratégie",
+    q:"Quels sont les 3 éléments majeurs d'évaluation selon Sun Tzu ?",
+    options:["La politique/motivation et discipline, les conditions atmosphériques, le terrain","L'argent, les armes, les hommes","La vitesse, la surprise, la force","Le prix, la qualité, le délai"],
+    answer:0,
+    explain:"Sun Tzu évalue : (i) la politique, la motivation des hommes et la discipline ; (ii) les conditions atmosphériques (l'environnement) ; (iii) le terrain (le domaine d'activité / marché)." },
+
+  { theme:"Stratégie",
+    q:"À quelle logique rattache-t-on Carl Von Clausewitz (1780-1831) ?",
+    options:["La logique de la puissance","La logique de la ruse","La logique du commerce","La logique de l'innovation"],
+    answer:0,
+    explain:"Clausewitz, général prussien, incarne la logique de la puissance : « La guerre n'est que le prolongement de la politique par d'autres moyens. »" },
+
+  { theme:"Stratégie",
+    q:"Selon la définition du cours, la stratégie est :",
+    options:["L'ensemble des décisions prises par l'entreprise en fonction de l'environnement et qui l'engagent à long terme","L'ensemble des actions quotidiennes de production","La répartition des salaires entre les agents","Le contrôle des coûts à court terme"],
+    answer:0,
+    explain:"Définition apparue dans les années 1960 : « La stratégie est l'ensemble des décisions prises par l'entreprise en fonction de l'environnement et qui l'engagent à long terme. »" },
+
+  { theme:"Stratégie",
+    q:"Que signifie le modèle LCAG ?",
+    options:["Learned, Christensen, Andrews, Guth","Loi, Contrat, Accord, Gestion","Long terme, Coût, Avantage, Gestion","Leadership, Contrôle, Analyse, Gestion"],
+    answer:0,
+    explain:"Le modèle LCAG (Learned, Christensen, Andrews, Guth), développé par 4 professeurs de la Harvard Business School, est le modèle de formulation générale de la stratégie." },
+
+  { theme:"Stratégie",
+    q:"Parmi ces propositions, laquelle N'EST PAS une caractéristique de la stratégie ?",
+    options:["La recherche de la stabilité des prix","La recherche d'un avantage concurrentiel","L'allocation des ressources","L'influence de l'environnement"],
+    answer:0,
+    explain:"Les caractéristiques sont : compétitivité et sécurité, allocation des ressources, stratégie ≠ tactique, recherche d'un avantage concurrentiel, influence de l'environnement, influence des valeurs du dirigeant." },
+
+  /* ---------- DIAGNOSTIC EXTERNE ---------- */
+  { theme:"Diagnostic externe",
+    q:"Que permet d'identifier le diagnostic externe ?",
+    options:["Les Opportunités et les Menaces de l'environnement","Les Forces et les Faiblesses internes","Les coûts de revient","Les besoins en personnel"],
+    answer:0,
+    explain:"Le diagnostic externe identifie les Opportunités et les Menaces de l'environnement (les Forces et Faiblesses relèvent, elles, du diagnostic interne)." },
+
+  { theme:"Diagnostic externe",
+    q:"Quels sont les 3 niveaux du diagnostic de l'environnement ?",
+    options:["Macro-environnement, méso-environnement, micro-environnement","Politique, économique, social","Local, national, international","Court, moyen, long terme"],
+    answer:0,
+    explain:"Le diagnostic de l'environnement se conduit à 3 niveaux : macro-environnement, méso-environnement et micro-environnement." },
+
+  { theme:"Diagnostic externe",
+    q:"Le macro-environnement correspond à :",
+    options:["L'ensemble des grandes tendances de la société dans sa globalité, que l'entreprise subit","Les concurrents directs de l'entreprise","Le marché local de l'entreprise","Les fournisseurs et les clients"],
+    answer:0,
+    explain:"Le macro-environnement regroupe les grandes tendances (démographiques, économiques, politiques, écologiques, sociales, culturelles…) que l'entreprise subit." },
+
+  { theme:"Diagnostic externe",
+    q:"Combien de piliers composent le modèle PESTEL, et lesquels ?",
+    options:["6 : Politique, Économique, Socio-culturel, Technologique, Écologique, Légal","5 : Prix, Emploi, Social, Taxe, État, Local","4 : Politique, Économie, Social, Technique","7 : Politique, Économique, Social, Technique, Écologique, Légal, International"],
+    answer:0,
+    explain:"PESTEL analyse le macro-environnement selon 6 piliers : Politique, Économique, Socio-culturel, Technologique, Écologique, Légal." },
+
+  { theme:"Diagnostic externe",
+    q:"Dans le modèle PESTEL, la conjoncture économique, l'évolution du PIB, les taux d'intérêt et l'inflation relèvent du pilier :",
+    options:["Économique","Politique","Socio-culturel","Légal"],
+    answer:0,
+    explain:"Ces indicateurs relèvent du pilier Économique (E) du PESTEL." },
+
+  { theme:"Diagnostic externe",
+    q:"Les normes environnementales et la réduction des infrastructures polluantes relèvent du pilier :",
+    options:["Écologique","Légal","Technologique","Politique"],
+    answer:0,
+    explain:"Cela correspond au pilier Écologique (E) du PESTEL." },
+
+  { theme:"Diagnostic externe",
+    q:"La démographie, le changement des modes de vie et l'attitude par rapport au travail relèvent du pilier :",
+    options:["Socio-culturel","Économique","Politique","Technologique"],
+    answer:0,
+    explain:"Ces tendances relèvent du pilier Socio-culturel (S) du PESTEL." }
+];
+
+/* =========================================================
+   ÉTAT & UTILITAIRES
+   ========================================================= */
+const state = {
+  pool: [], index: 0, score: 0, answers: [],
+  selected: null, locked: false,
+  startTime: 0, timerId: null
+};
+
+const $ = sel => document.querySelector(sel);
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function formatTime(ms){
+  const total = Math.floor(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return m + ":" + String(s).padStart(2, "0");
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#screen-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* Prépare un tirage : mélange des questions + mélange des propositions */
+function buildPool(count){
+  const n = (count === 0 || count > QUESTIONS.length) ? QUESTIONS.length : count;
+  const picked = shuffle(QUESTIONS).slice(0, n);
+  return picked.map(q => {
+    const opts = shuffle(q.options.map((text, i) => ({ text, correct: i === q.answer })));
+    return {
+      theme: q.theme,
+      q: q.q,
+      explain: q.explain,
+      options: opts,
+      answer: opts.findIndex(o => o.correct)
+    };
+  });
+}
+
+/* =========================================================
+   LANCEMENT D'UNE PARTIE
+   ========================================================= */
+function startQuiz(count){
+  state.pool = buildPool(count);
+  state.index = 0;
+  state.score = 0;
+  state.answers = [];
+  state.selected = null;
+  state.locked = false;
+  state.startTime = Date.now();
+
+  clearInterval(state.timerId);
+  $('#liveTime').textContent = '0:00';
+  state.timerId = setInterval(() => {
+    $('#liveTime').textContent = formatTime(Date.now() - state.startTime);
+  }, 500);
+
+  $('#qTotal').textContent = state.pool.length;
+  $('#liveScore').textContent = '0';
+  show('quiz');
+  renderQuestion();
+}
+
+/* =========================================================
+   AFFICHAGE D'UNE QUESTION
+   ========================================================= */
+function renderQuestion(){
+  const q = state.pool[state.index];
+  state.selected = null;
+  state.locked = false;
+
+  $('#themeBadge').textContent = q.theme;
+  $('#qNum').textContent = state.index + 1;
+  $('#bar').style.width = (state.index / state.pool.length * 100) + '%';
+  $('#questionText').textContent = q.q;
+
+  const box = $('#options');
+  box.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option';
+    btn.dataset.index = i;
+
+    const letter = document.createElement('span');
+    letter.className = 'letter';
+    letter.textContent = 'ABCD'[i];
+
+    const text = document.createElement('span');
+    text.className = 'otext';
+    text.textContent = opt.text;
+
+    btn.appendChild(letter);
+    btn.appendChild(text);
+    btn.addEventListener('click', () => selectOption(i));
+    box.appendChild(btn);
+  });
+
+  const fb = $('#feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+
+  $('#btnValidate').disabled = true;
+  $('#btnValidate').classList.remove('hidden');
+  $('#btnNext').classList.add('hidden');
+}
+
+/* =========================================================
+   SÉLECTION D'UNE RÉPONSE
+   ========================================================= */
+function selectOption(i){
+  if (state.locked) return;
+  state.selected = i;
+  document.querySelectorAll('.option').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+  $('#btnValidate').disabled = false;
+}
+
+/* =========================================================
+   VALIDATION
+   ========================================================= */
+function validateAnswer(){
+  if (state.locked || state.selected === null) return;
+  state.locked = true;
+
+  const q = state.pool[state.index];
+  const els = document.querySelectorAll('.option');
+  const correct = q.answer;
+  const isRight = state.selected === correct;
+
+  els.forEach((el, i) => {
+    el.classList.add('disabled');
+    el.classList.remove('selected');
+    if (i === correct) el.classList.add('correct');
+    if (i === state.selected && i !== correct) el.classList.add('wrong');
+  });
+
+  if (isRight) state.score++;
+  $('#liveScore').textContent = state.score;
+
+  state.answers.push({
+    theme: q.theme,
+    question: q.q,
+    chosenText: q.options[state.selected].text,
+    correctText: q.options[correct].text,
+    isRight: isRight,
+    explain: q.explain
+  });
+
+  const fb = $('#feedback');
+  fb.className = 'feedback show ' + (isRight ? 'ok' : 'ko');
+  fb.innerHTML =
+    '<div class="fb-title">' + (isRight ? '✓ Bonne réponse !' : '✕ Réponse incorrecte') + '</div>' +
+    '<p>' + q.explain + '</p>';
+
+  $('#bar').style.width = ((state.index + 1) / state.pool.length * 100) + '%';
+
+  $('#btnValidate').classList.add('hidden');
+  const next = $('#btnNext');
+  next.classList.remove('hidden');
+  next.textContent = (state.index === state.pool.length - 1) ? 'Voir mes résultats' : 'Question suivante';
+}
+
+/* =========================================================
+   QUESTION SUIVANTE
+   ========================================================= */
+function nextQuestion(){
+  state.index++;
+  if (state.index >= state.pool.length) {
+    finishQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+
+/* =========================================================
+   FIN DE PARTIE
+   ========================================================= */
+function finishQuiz(){
+  clearInterval(state.timerId);
+
+  const total = state.pool.length;
+  const pct = Math.round(state.score / total * 100);
+  const elapsed = Date.now() - state.startTime;
+
+  // Donut
+  const color = pct >= 70 ? '#2ea043' : (pct >= 50 ? '#d29922' : '#e5534b');
+  $('#donut').style.background =
+    'conic-gradient(' + color + ' ' + (pct * 3.6) + 'deg, #22303f 0deg)';
+  $('#donutPct').textContent = pct + '%';
+
+  // Titre + message
+  let title, msg;
+  if (pct >= 90)      { title = 'Excellent ! 🏆';      msg = 'Maîtrise remarquable du cours. Vous êtes prêt pour l\'évaluation.'; }
+  else if (pct >= 70) { title = 'Très bien ! 👏';       msg = 'Bonnes bases. Revenez sur les quelques points manqués ci-dessous.'; }
+  else if (pct >= 50) { title = 'Pas mal ! 💪';         msg = 'Les fondations sont là, mais certaines notions demandent une relecture.'; }
+  else                { title = 'À consolider 📚';      msg = 'Reprenez le cours section par section, puis retentez le QCM.'; }
+
+  $('#resultTitle').textContent = title;
+  $('#resultMsg').textContent = msg;
+  $('#statCorrect').textContent = state.score;
+  $('#statWrong').textContent = total - state.score;
+  $('#statTime').textContent = formatTime(elapsed);
+
+  // Bilan par thème
+  const themes = {};
+  state.answers.forEach(a => {
+    if (!themes[a.theme]) themes[a.theme] = { ok: 0, total: 0 };
+    themes[a.theme].total++;
+    if (a.isRight) themes[a.theme].ok++;
+  });
+
+  const tbox = $('#themes');
+  tbox.innerHTML = '';
+  Object.keys(themes).sort().forEach(name => {
+    const t = themes[name];
+    const p = Math.round(t.ok / t.total * 100);
+
+    const row = document.createElement('div');
+    row.className = 'theme-row';
+
+    const n = document.createElement('span');
+    n.className = 'tname';
+    n.textContent = name;
+
+    const v = document.createElement('span');
+    v.className = 'tval';
+    v.textContent = t.ok + '/' + t.total + ' · ' + p + '%';
+
+    const bar = document.createElement('div');
+    bar.className = 'tbar';
+    const fill = document.createElement('i');
+    fill.style.width = p + '%';
+    if (p < 50) fill.style.background = 'linear-gradient(90deg,#e5534b,#d29922)';
+    bar.appendChild(fill);
+
+    row.appendChild(n);
+    row.appendChild(v);
+    row.appendChild(bar);
+    tbox.appendChild(row);
+  });
+
+  // Correction détaillée
+  const rev = $('#review');
+  rev.innerHTML = '';
+  state.answers.forEach((a, i) => {
+    const item = document.createElement('div');
+    item.className = 'rev-item' + (a.isRight ? '' : ' ko');
+
+    const qLine = document.createElement('div');
+    qLine.className = 'rev-q';
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.textContent = String(i + 1).padStart(2, '0') + '.';
+    const qt = document.createElement('span');
+    qt.textContent = a.question;
+    qLine.appendChild(num);
+    qLine.appendChild(qt);
+
+    const yourLine = document.createElement('div');
+    yourLine.className = 'rev-line ' + (a.isRight ? 'good' : 'bad');
+    yourLine.innerHTML = '<b>Votre réponse :</b> ';
+    yourLine.append(a.chosenText);
+
+    item.appendChild(qLine);
+    item.appendChild(yourLine);
+
+    if (!a.isRight) {
+      const okLine = document.createElement('div');
+      okLine.className = 'rev-line good';
+      okLine.innerHTML = '<b>Bonne réponse :</b> ';
+      okLine.append(a.correctText);
+      item.appendChild(okLine);
+    }
+
+    const exp = document.createElement('div');
+    exp.className = 'rev-exp';
+    exp.textContent = a.explain;
+    item.appendChild(exp);
+
+    rev.appendChild(item);
+  });
+
+  show('result');
+}
+
+/* =========================================================
+   ÉVÉNEMENTS
+   ========================================================= */
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => startQuiz(parseInt(btn.dataset.count, 10)));
+});
+
+$('#btnValidate').addEventListener('click', validateAnswer);
+$('#btnNext').addEventListener('click', nextQuestion);
+
+$('#btnRestart').addEventListener('click', () => show('start'));
+$('#btnHome').addEventListener('click', () => show('start'));
+
+/* Raccourcis clavier : 1-4 pour choisir, Entrée pour valider / avancer */
+document.addEventListener('keydown', e => {
+  if (!$('#screen-quiz').classList.contains('active')) return;
+
+  if (e.key >= '1' && e.key <= '4') {
+    const idx = parseInt(e.key, 10) - 1;
+    const el = document.querySelectorAll('.option')[idx];
+    if (el && !state.locked) selectOption(idx);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (!state.locked && state.selected !== null) validateAnswer();
+    else if (state.locked) nextQuestion();
+  }
+});
+
+/* Compteur total sur l'accueil */
+$('#totalLabel').textContent = QUESTIONS.length + ' questions';
+</script>
+</body>
+</html>
